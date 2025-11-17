@@ -5,4 +5,4 @@ from typing import Literal
 class NotificationSchema(BaseModel):
     name: str
     content: str
-    type: Literal["email", "sms"]
+    type: Literal["email", "sms", "phone_call"]

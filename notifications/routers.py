@@ -7,7 +7,7 @@ router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
 @router.post("/", summary="Send a notification")
-async def create_notification(
+async def send_notification(
     notification: NotificationSchema,
     service: NotificationService = Depends(get_notification_service)
 ):

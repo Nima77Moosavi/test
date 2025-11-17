@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from .repositories import NotificationRepository
 from .schemas import NotificationSchema
-from typing import Protocol, Optional
+from typing import Protocol, Optional, Callable
 
 
 class NotificationSender(Protocol):
@@ -18,6 +18,10 @@ class EmailSender:
 class SMSSender:
     async def send_notification(self, notification: NotificationSchema) -> str:
         return f"Sending SMS with content: {notification.content}"
+    
+class PhoneCallSender:
+    async def send_notification(self, notification: NotificationSchema) -> str:
+        return f"Making phone call with content: {notification.content}"
 
 
 def get_sender(notification: NotificationSchema) -> NotificationSender:
@@ -25,12 +29,16 @@ def get_sender(notification: NotificationSchema) -> NotificationSender:
         return EmailSender()
     elif notification.type == "sms":
         return SMSSender()
+    elif notification.type == "phone_call":
+        return PhoneCallSender()
     else:
         raise ValueError("Unsupported notification type")
 
 
 class NotificationService:
-    def __init__(self, repository: NotificationRepository, sender_factory: callable):
+    def __init__(self,
+                 repository: NotificationRepository,
+                 sender_factory: Callable[[NotificationSchema], NotificationSender]):
         self.repository = repository
         self.sender_factory = sender_factory
 
@@ -39,7 +47,7 @@ class NotificationService:
         created_notification = await self.repository.create_notification(notification)
 
         # Choose sender dynamically
-        sender = get_sender(notification)
+        sender = self.sender_factory(notification)
         message = await sender.send_notification(notification)
 
         return {"notification": created_notification, "message": message}
