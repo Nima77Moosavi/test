@@ -12,17 +12,12 @@ class NotificationSender(Protocol):
 
 class EmailSender:
     async def send_notification(self, notification: NotificationSchema) -> str:
-        # Here we assume email address is somehow known or fixed
-        # For now, just simulate sending
-        email = getattr(notification, "email", "test@example.com")
-        return f"Sending email to {email} with content: {notification.content}"
+        return f"Sending email with content: {notification.content}"
 
 
 class SMSSender:
     async def send_notification(self, notification: NotificationSchema) -> str:
-        # Simulate sending SMS
-        phone = getattr(notification, "phone_number", "0000000000")
-        return f"Sending SMS to {phone} with content: {notification.content}"
+        return f"Sending SMS with content: {notification.content}"
 
 
 def get_sender(notification: NotificationSchema) -> NotificationSender:
