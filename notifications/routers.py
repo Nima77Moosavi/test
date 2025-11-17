@@ -1,8 +1,14 @@
-from fastapi import APIRouter
-from schemas import NotificationSchema
+from fastapi import APIRouter, Depends, HTTPException
+from .schemas import NotificationSchema
+from .services import NotificationService
+from .dependencies import get_notification_service
 
-router = APIRouter()
+router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
-@router.post("/send-notification")
-async def send_notification(notification: NotificationSchema):
-    return {"message": "Notification sent"}
+
+@router.post("/")
+async def create_notification(
+    notification: NotificationSchema,
+    service: NotificationService = Depends(get_notification_service)
+):
+    return await service.send_notification(notification)
