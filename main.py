@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from notifications.database import Base, engine
-import asyncio
+from notifications.routers import router as notification_router
 
 app = FastAPI()
 
@@ -15,3 +15,5 @@ async def on_startup():
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
+
+app.include_router(notification_router)

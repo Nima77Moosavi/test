@@ -35,8 +35,9 @@ def get_sender(notification: NotificationSchema) -> NotificationSender:
 
 
 class NotificationService:
-    def __init__(self, repository: NotificationRepository):
+    def __init__(self, repository: NotificationRepository, sender_factory: callable):
         self.repository = repository
+        self.sender_factory = sender_factory
 
     async def send_notification(self, notification: NotificationSchema):
         # Save to database
@@ -44,6 +45,6 @@ class NotificationService:
 
         # Choose sender dynamically
         sender = get_sender(notification)
-        message = await sender.send(notification)
+        message = await sender.send_notification(notification)
 
         return {"notification": created_notification, "message": message}

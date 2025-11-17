@@ -9,7 +9,8 @@ class NotificationRepository:
     async def create_notification(self, notification: NotificationSchema) -> NotificationModel:
         new_notification = NotificationModel(
             name=notification.name,
-            content=f"Notification of type {notification.type} for {notification.email}"
+            content=f"Notification of type {notification.type} for {notification.name}",
+            type=notification.type
         )
         self.db.add(new_notification)
         await self.db.commit()
